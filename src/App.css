@@ -841,4 +841,517 @@ video, video source, .animation, .right-content {
   background: transparent !important;
   background-color: transparent !important;
   mix-blend-mode: plus-lighter;
+}
+
+/* Responsive Tasarım */
+@media screen and (max-width: 1200px) {
+  .main-content {
+    padding: 12rem 4rem 4rem;
+    gap: 4rem;
+  }
+
+  .main-title {
+    font-size: 4rem;
+  }
+
+  .subtitle {
+    font-size: 1.8rem;
+  }
+
+  .panels-panel {
+    max-width: 100%;
+  }
+
+  .footer-links {
+    gap: 4rem;
+  }
+
+  .trusted-title {
+    font-size: 12rem;
+  }
+}
+
+@media screen and (max-width: 992px) {
+  .navbar {
+    padding: 1.5rem 2rem;
+  }
+
+  .main-content {
+    grid-template-columns: 1fr;
+    padding: 8rem 2rem 4rem;
+    text-align: center;
+    margin: 0;
+    width: 100%;
+  }
+
+  .left-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+  }
+
+  .main-title {
+    width: 100%;
+    text-align: center;
+    margin: 0 auto;
+    padding: 0;
+  }
+
+  .subtitle {
+    width: 100%;
+    text-align: center;
+    margin: 1rem auto;
+    padding: 0;
+  }
+
+  .feature-tags {
+    justify-content: center;
+    width: 100%;
+    flex-wrap: wrap;
+    margin: 2rem auto;
+  }
+
+  .stats {
+    width: 100%;
+    justify-content: center;
+    margin: 0 auto;
+  }
+
+  .right-content {
+    display: none;
+  }
+
+  .panels-panel {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    margin: 0 auto;
+    width: 95%;
+    max-width: 600px;
+    background: #1E1E1E;
+    border-radius: 24px;
+    padding: 2rem;
+    box-shadow: none;
+    border: none;
+  }
+
+  .card-content {
+    width: 100%;
+    padding: 0;
+  }
+
+  .card-head {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+  }
+
+  .card-head-left {
+    width: 100%;
+  }
+
+  .card-head-title {
+    font-size: 2.5rem;
+    margin: 0;
+  }
+
+  .card-head-subtitle {
+    font-size: 1rem;
+    color: #666;
+    margin-top: 0.5rem;
+  }
+
+  .rounded-button {
+    margin-top: 1rem;
+  }
+
+  .card-body {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .card-part {
+    background: #252525;
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .card-part-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .card-part-title {
+    font-size: 1.2rem;
+    font-weight: 300;
+    margin: 0;
+  }
+
+  .card-part-content {
+    display: none;
+  }
+
+  .animated-plus {
+    width: 16px;
+    height: 16px;
+  }
+
+  .plus-bar {
+    background: #666;
+  }
+
+  .panel-media {
+    order: -1;
+    min-height: 200px;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #1E1E1E;
+    margin-bottom: 2rem;
+  }
+
+  .panel-media-background {
+    background: linear-gradient(135deg, rgba(26, 75, 140, 0.1) 0%, rgba(26, 75, 140, 0) 100%);
+  }
+
+  .rounded-button {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+    background: #1a4b8c;
+    border-radius: 8px;
+  }
+
+  .footer {
+    padding: 3rem 1rem 0;
+  }
+
+  .footer-links {
+    gap: 2rem;
+  }
+
+  .footer-column h3 {
+    font-size: 1.1rem;
+  }
+
+  .footer-link {
+    font-size: 0.9rem;
+  }
+
+  .footer-bottom {
+    height: 150px;
+    margin-bottom: -50px;
+  }
+
+  .footer-logo {
+    width: 800px;
+    height: auto;
+    opacity: 1;
+  }
+
+  .earn-section, .borrow-section {
+    padding: 4rem 1rem;
+    width: 100%;
+  }
+
+  .borrow-section .panels-panel {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    margin: 0 auto;
+    width: 95%;
+    max-width: 600px;
+    background: #1E1E1E;
+    border-radius: 24px;
+    padding: 2rem;
+    box-shadow: none;
+    border: none;
+  }
+
+  .borrow-section .panel-media {
+    order: -1;
+    min-height: 200px;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #1E1E1E;
+    margin-bottom: 2rem;
+  }
+
+  .borrow-section .card-content {
+    width: 100%;
+    padding: 0;
+  }
+
+  .borrow-section .card-head {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+  }
+
+  .borrow-section .card-head-left {
+    width: 100%;
+  }
+
+  .borrow-section .card-part {
+    background: #252525;
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .borrow-section .card-part:hover {
+    background: #252525;
+  }
+
+  .borrow-section .panel-media-background {
+    background: linear-gradient(135deg, rgba(26, 75, 140, 0.1) 0%, rgba(26, 75, 140, 0) 100%);
+  }
+
+  .borrow-section .rounded-button {
+    margin-top: 1rem;
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+    background: #1a4b8c;
+    border-radius: 8px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .nav-button:not(.launch-button) {
+    display: none;
+  }
+
+  .main-title {
+    font-size: 3rem;
+  }
+
+  .subtitle {
+    font-size: 1.5rem;
+  }
+
+  .stats {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .card-head {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .card-head-title {
+    font-size: 2rem;
+  }
+
+  .trusted-title {
+    font-size: 6rem;
+    margin-bottom: -1rem;
+  }
+
+  .member-box {
+    width: 80px;
+  }
+
+  @keyframes slideRight {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(calc(-80px * 10 - 1rem * 10));
+    }
+  }
+
+  @keyframes slideLeft {
+    from {
+      transform: translateX(calc(-80px * 9 - 1rem * 9));
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+
+  .footer-bottom {
+    height: 120px;
+    margin-bottom: -40px;
+  }
+
+  .footer-logo {
+    width: 600px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .navbar {
+    padding: 1rem;
+    width: 100%;
+  }
+
+  .nav-left {
+    gap: 0.8rem;
+  }
+
+  .brand-name {
+    font-size: 1.5rem;
+  }
+
+  .alpha-tag {
+    padding: 0.2rem 0.5rem;
+    font-size: 0.8rem;
+  }
+
+  .logo {
+    height: 35px;
+  }
+
+  .main-content {
+    padding: 6rem 1rem 2rem;
+  }
+
+  .main-title {
+    font-size: 2.2rem;
+    line-height: 1.2;
+  }
+
+  .subtitle {
+    font-size: 1.1rem;
+    line-height: 1.4;
+    margin: 0.5rem auto;
+  }
+
+  .feature-tags {
+    gap: 0.8rem;
+    margin: 1.5rem auto;
+  }
+
+  .tag {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .stats {
+    gap: 1.5rem;
+  }
+
+  .stat-value {
+    font-size: 1.8rem;
+  }
+
+  .stat-label {
+    font-size: 1rem;
+  }
+
+  .members-section {
+    padding: 4rem 1rem;
+  }
+
+  .trusted-title {
+    font-size: 3rem;
+    margin-bottom: 2rem;
+  }
+
+  .member-box {
+    width: 50px;
+    padding: 0.8rem;
+  }
+
+  .members-row {
+    gap: 0.8rem;
+  }
+
+  .card-head-title {
+    font-size: 1.8rem;
+  }
+
+  .card-head-subtitle {
+    font-size: 0.9rem;
+  }
+
+  .card-part {
+    padding: 1rem;
+  }
+
+  .footer {
+    padding: 3rem 1rem 0;
+  }
+
+  .footer-links {
+    gap: 2rem;
+  }
+
+  .footer-bottom {
+    height: 100px;
+    margin-bottom: -30px;
+  }
+
+  .footer-logo {
+    width: 300px;
+    opacity: 1;
+  }
+
+  .panels-panel {
+    width: 92%;
+    padding: 1.5rem;
+    border-radius: 20px;
+  }
+
+  .card-head-title {
+    font-size: 2rem;
+  }
+
+  .card-head-subtitle {
+    font-size: 0.9rem;
+  }
+
+  .card-part {
+    padding: 1rem;
+  }
+
+  .card-part-title {
+    font-size: 1.1rem;
+  }
+
+  .panel-media {
+    min-height: 150px;
+  }
+
+  .rounded-button {
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+  }
+
+  .earn-section, .borrow-section {
+    padding: 3rem 0.5rem;
+  }
+
+  .borrow-section .panels-panel {
+    width: 92%;
+    padding: 1.5rem;
+    border-radius: 20px;
+  }
+
+  .borrow-section .panel-media {
+    min-height: 150px;
+  }
+
+  .borrow-section .card-part {
+    padding: 1rem;
+  }
+
+  .borrow-section .rounded-button {
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+  }
 } 

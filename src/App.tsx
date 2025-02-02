@@ -1,359 +1,224 @@
-import { useState, useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import './App.css'
-import logo from '/logo1.png'
-import animation from '/animation.mp4'
+import logo from '/logo.png'
 
 function App() {
-  const [activeFeature, setActiveFeature] = useState('simple')
-  const earnSectionRef = useRef(null)
-  const borrowSectionRef = useRef(null)
-  const membersSectionRef = useRef(null)
-  const footerRef = useRef(null)
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const mousePosition = useRef({ x: 0, y: 0 })
+  const [isMobile, setIsMobile] = useState(false)
+  const particles = useRef<Array<{
+    x: number
+    y: number
+    size: number
+    baseX: number
+    baseY: number
+    density: number
+    color: string
+    speedX: number
+    speedY: number
+    angle: number
+    amplitude: number
+    frequency: number
+    brightness: number
+  }>>([])
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          // Eğer element görünür hale geldiyse
-          if (entry.isIntersecting) {
-            console.log('Element görünür oldu:', entry.target);
-            entry.target.classList.add('visible');
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768)
+    }
+    
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    const colors = [
+      'rgba(255, 255, 255, ', // Parlak beyaz
+      'rgba(200, 200, 200, ', // Açık gri
+      'rgba(180, 180, 180, '  // Orta gri
+    ]
+
+    const handleResize = () => {
+      canvas.width = window.innerWidth
+      canvas.height = window.innerHeight
+      init()
+    }
+
+    const init = () => {
+      particles.current = []
+      const numberOfParticles = (canvas.width * canvas.height) / 6000
+      for (let i = 0; i < numberOfParticles; i++) {
+        const size = Math.random() * 2.5 + 1.5
+        const x = Math.random() * canvas.width
+        const y = Math.random() * canvas.height
+        const color = colors[Math.floor(Math.random() * colors.length)]
+        particles.current.push({
+          x,
+          y,
+          size,
+          baseX: x,
+          baseY: y,
+          density: Math.random() * 20 + 1,
+          color,
+          speedX: (Math.random() * 2 - 1) * 0.2,
+          speedY: (Math.random() * 2 - 1) * 0.2,
+          angle: Math.random() * Math.PI * 2,
+          amplitude: Math.random() * 1.5 + 0.5,
+          frequency: Math.random() * 0.02 + 0.01,
+          brightness: Math.random() * 0.3 + 0.7
+        })
+      }
+    }
+
+    const drawConnections = () => {
+      for (let i = 0; i < particles.current.length; i++) {
+        for (let j = i; j < particles.current.length; j++) {
+          const dx = particles.current[i].x - particles.current[j].x
+          const dy = particles.current[i].y - particles.current[j].y
+          const distance = Math.sqrt(dx * dx + dy * dy)
+
+          if (distance < 120) {
+            const opacity = (120 - distance) / 120 * 0.2
+            ctx.beginPath()
+            ctx.strokeStyle = particles.current[i].color + opacity + ')'
+            ctx.lineWidth = 0.2
+            ctx.moveTo(particles.current[i].x, particles.current[i].y)
+            ctx.lineTo(particles.current[j].x, particles.current[j].y)
+            ctx.stroke()
           }
-        });
-      },
-      {
-        root: null, // viewport'u kullan
-        threshold: 0.2, // elemanın %20'si görünür olduğunda tetikle
-        rootMargin: '0px' // viewport sınırlarını kullan
-      }
-    );
-
-    // Gözlemlenecek elementler
-    const sections = [
-      earnSectionRef.current,
-      borrowSectionRef.current,
-      membersSectionRef.current,
-      footerRef.current
-    ];
-
-    // Her bir elementi gözleme al
-    sections.forEach((section) => {
-      if (section) {
-        observer.observe(section);
-      }
-    });
-
-    // Cleanup
-    return () => {
-      sections.forEach((section) => {
-        if (section) {
-          observer.unobserve(section);
         }
-      });
-    };
-  }, []);
+      }
+    }
+
+    const animate = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+      
+      particles.current.forEach(particle => {
+        // Dalgalanma hareketi
+        particle.angle += particle.frequency
+        const waveY = Math.sin(particle.angle) * particle.amplitude
+        const waveX = Math.cos(particle.angle * 0.5) * particle.amplitude
+
+        // Mouse interaction
+        let dx = mousePosition.current.x - particle.x
+        let dy = mousePosition.current.y - particle.y
+        let distance = Math.sqrt(dx * dx + dy * dy)
+        let forceDirectionX = dx / distance
+        let forceDirectionY = dy / distance
+        let maxDistance = 180
+        let force = (maxDistance - distance) / maxDistance
+        let directionX = forceDirectionX * force * particle.density * 0.2
+        let directionY = forceDirectionY * force * particle.density * 0.2
+
+        if (distance < maxDistance) {
+          particle.x -= directionX
+          particle.y -= directionY
+        } else {
+          if (particle.x !== particle.baseX) {
+            dx = particle.x - particle.baseX
+            particle.x -= dx/35
+          }
+          if (particle.y !== particle.baseY) {
+            dy = particle.y - particle.baseY
+            particle.y -= dy/35
+          }
+        }
+
+        // Sabit hızlı hareket
+        particle.x += particle.speedX * 0.5 + waveX * 0.05
+        particle.y += particle.speedY * 0.5 + waveY * 0.05
+
+        // Ekran sınırlarında sekme
+        if (particle.x < 0 || particle.x > canvas.width) {
+          particle.speedX *= -1
+          particle.x = Math.max(0, Math.min(canvas.width, particle.x))
+        }
+        if (particle.y < 0 || particle.y > canvas.height) {
+          particle.speedY *= -1
+          particle.y = Math.max(0, Math.min(canvas.height, particle.y))
+        }
+
+        // Draw particle with gradient and breathing effect
+        const gradient = ctx.createRadialGradient(
+          particle.x, particle.y, 0,
+          particle.x, particle.y, particle.size * (1 + Math.sin(particle.angle * 0.5) * 0.1)
+        )
+        gradient.addColorStop(0, particle.color + particle.brightness + ')')
+        gradient.addColorStop(1, particle.color + '0)')
+        
+        ctx.beginPath()
+        ctx.fillStyle = gradient
+        ctx.arc(particle.x, particle.y, 
+          particle.size * (1 + Math.sin(particle.angle * 0.5) * 0.1), 
+          0, Math.PI * 2)
+        ctx.fill()
+      })
+
+      drawConnections()
+      requestAnimationFrame(animate)
+    }
+
+    const handleMouseMove = (event: MouseEvent) => {
+      mousePosition.current.x = event.x
+      mousePosition.current.y = event.y
+    }
+
+    const handleTouchMove = (event: TouchEvent) => {
+      mousePosition.current.x = event.touches[0].clientX
+      mousePosition.current.y = event.touches[0].clientY
+    }
+
+    handleResize()
+    window.addEventListener('resize', handleResize)
+    window.addEventListener('mousemove', handleMouseMove)
+    window.addEventListener('touchmove', handleTouchMove)
+    animate()
+
+    return () => {
+      window.removeEventListener('resize', handleResize)
+      window.removeEventListener('mousemove', handleMouseMove)
+      window.removeEventListener('touchmove', handleTouchMove)
+    }
+  }, [])
 
   return (
-    <div className="app-container">
-      <nav className="navbar">
-        <div className="nav-left">
-          <img src={logo} alt="LutrAI Logo" className="logo" />
-          <span className="brand-name">LutrAI</span>
-          <span className="alpha-tag">ALPHA</span>
-          <button className="nav-button">Get in the water</button>
+    <div className={`coming-soon-container ${isMobile ? 'mobile' : ''}`}>
+      <canvas ref={canvasRef} className="background-canvas" />
+      <div className={`coming-soon-content ${isMobile ? 'mobile' : ''}`}>
+        <img src={logo} alt="LutrAI Logo" className="coming-soon-logo" />
+        <div className="title-container">
+          <h1 className="elegant-text">Coming Soon</h1>
+          <div className="title-accent"></div>
         </div>
-        <div className="nav-right">
-          <button className="nav-button">Resources</button>
-          <button className="launch-button">Launch App</button>
-        </div>
-      </nav>
-
-      <main className="main-content">
-        <div className="left-content">
-          <h1 className="main-title">
-            Intelligent loans,<br />
-            decentralized future
-          </h1>
-          <p className="subtitle">
-            LutrAI is the AI behind smarter<br />
-            DeFi decisions.
-          </p>
-          <div className="feature-tags">
-            <span className="tag">Intelligence</span>
-            <span className="tag">Efficiency</span>
-            <span className="tag">Innovation</span>
+        <div className="text-container">
+          <div className="text-line">
+            <span className="text-highlight">LutrAI</span>
+            <span className="text-fade">is currently under development</span>
           </div>
-          <div className="stats">
-            <div className="stat-item">
-              <span className="stat-label">Total Treasury</span>
-              <span className="stat-value">$6,521,521,555</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-label">Total Profit</span>
-              <span className="stat-value">$6,521,521,555</span>
-            </div>
+          <div className="text-line delayed">
+            <span className="text-fade">Stay tuned for smarter</span>
+            <span className="text-highlight">DeFi</span>
+            <span className="text-fade">decisions</span>
           </div>
         </div>
-        <div className="right-content">
-          <video 
-            autoPlay 
-            loop 
-            muted 
-            playsInline 
-            className="animation"
-            style={{
-              background: 'transparent',
-              backgroundColor: 'transparent',
-              mixBlendMode: 'plus-lighter'
-            }}
-          >
-            <source 
-              src={animation} 
-              type="video/mp4" 
-              style={{ 
-                background: 'transparent',
-                backgroundColor: 'transparent'
-              }} 
-            />
-          </video>
+        <div className="social-links">
+          <a href="https://x.com/Lutrdotai" className="elegant-button" target="_blank" rel="noopener noreferrer">
+            <span className="button-content">
+              Twitter
+              <svg className="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path>
+              </svg>
+            </span>
+          </a>
         </div>
-      </main>
-
-      <section ref={membersSectionRef} className="members-section scroll-animation">
-        <h2 className="trusted-title">Trusted by</h2>
-        
-        {/* İlk satır */}
-        <div className="members-row">
-          {[...Array(50)].map((_, i) => {
-            const companies = ['gauntlet', 'index', 'instadapp', 'ledger', 'summer-fi', 
-              'superform', 'swissborg', 'usual', 'defi-saver', 'ethena'];
-            const companyIndex = i % companies.length;
-            return (
-              <div key={`row1-${i}`} className={`member-box ${i % companies.length === 1 ? 'active' : ''}`}>
-                <img 
-                  src={`/company/${companies[companyIndex]}-360x360.webp`} 
-                  alt={`${companies[companyIndex].charAt(0).toUpperCase() + companies[companyIndex].slice(1).replace('-', ' ')} Logo`} 
-                />
-              </div>
-            );
-          })}
-        </div>
-
-        {/* İkinci satır */}
-        <div className="members-row">
-          {[...Array(50)].map((_, i) => {
-            const companies = ['angle', 'ether.fi_', 'origami', 'b-protocol', 'centrifuge',
-              'sky', 'binance', 'spark', 'moonwell'];
-            const companyIndex = i % companies.length;
-            return (
-              <div key={`row2-${i}`} className={`member-box ${i % companies.length === 3 ? 'active' : ''}`}>
-                <img 
-                  src={`/company/${companies[companyIndex]}-360x360.webp`} 
-                  alt={`${companies[companyIndex].charAt(0).toUpperCase() + companies[companyIndex].slice(1).replace('-', ' ')} Logo`} 
-                />
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
-      <section ref={earnSectionRef} className="earn-section scroll-animation">
-        <div className="panels-panel">
-          <div className="card-content">
-            <div className="card-head">
-              <div className="card-head-left">
-                <h3 className="card-head-title">Earn</h3>
-                <h4 className="card-head-subtitle">Put your crypto to work</h4>
-              </div>
-              <a 
-                href="https://app.morpho.org" 
-                target="_blank" 
-                className="rounded-button"
-              >
-                <span className="button-labels">
-                  <span className="button-label">Earn</span>
-                  <span className="button-label">Earn</span>
-                </span>
-                <div className="animated-arrow">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M13.0625 6.93579L6.93424 13.0641"></path>
-                    <path d="M6.93587 6.93571H13.0641V13.064"></path>
-                  </svg>
-                </div>
-              </a>
-            </div>
-
-            <div className="card-body">
-              {[
-                { title: 'Simple', content: 'Deposit and start earning.' },
-                { title: 'Optimized', content: 'Vaults continuously optimize allocations.' },
-                { title: 'Tailored', content: 'Select a strategy that fits on your risk level.' },
-                { title: 'Non-custodial', content: 'Deposit in trustless smart contracts.' }
-              ].map((item) => (
-                <button 
-                  key={item.title}
-                  className="card-part"
-                  onMouseEnter={() => setActiveFeature(item.title.toLowerCase())}
-                >
-                  <div className="card-part-header">
-                    <h5 className="card-part-title">{item.title}</h5>
-                    <div className="animated-plus">
-                      <div className="plus-bar"></div>
-                      <div className="plus-bar"></div>
-                    </div>
-                  </div>
-                  <p className="card-part-content">{item.content}</p>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="panel-media">
-            <div className="panel-media-background"></div>
-            {[
-              'simple',
-              'optimized',
-              'tailored',
-              'noncustodial'
-            ].map((feature) => (
-              <picture 
-                key={feature}
-                className={`panel-media-part ${activeFeature === feature ? 'active' : ''}`}
-              >
-                <img 
-                  src={`/dashboard-${feature}.webp`}
-                  alt=""
-                  style={{
-                    objectFit: 'contain',
-                    objectPosition: 'center center',
-                    maxWidth: '86%',
-                    maxHeight: '86%'
-                  }}
-                  loading="lazy"
-                  decoding="async"
-                  draggable="false"
-                />
-              </picture>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section ref={borrowSectionRef} className="borrow-section scroll-animation">
-        <div className="panels-panel">
-          <div className="panel-media">
-            <div className="panel-media-background"></div>
-            {[
-              'lowcosts',
-              'collateralization',
-              'marketrates',
-              'zerofees'
-            ].map((feature) => (
-              <picture 
-                key={feature}
-                className={`panel-media-part ${activeFeature === feature ? 'active' : ''}`}
-              >
-                <img 
-                  src={`/dashboard-${feature}.webp`}
-                  alt=""
-                  style={{
-                    objectFit: 'contain',
-                    objectPosition: 'center center',
-                    maxWidth: '86%',
-                    maxHeight: '86%'
-                  }}
-                  loading="lazy"
-                  decoding="async"
-                  draggable="false"
-                />
-              </picture>
-            ))}
-          </div>
-
-          <div className="card-content">
-            <div className="card-head">
-              <div className="card-head-left">
-                <h3 className="card-head-title">Borrow</h3>
-                <h4 className="card-head-subtitle">Provide collateral to borrow any asset</h4>
-              </div>
-              <a 
-                href="https://app.morpho.org" 
-                target="_blank" 
-                className="rounded-button"
-              >
-                <span className="button-labels">
-                  <span className="button-label">Borrow</span>
-                  <span className="button-label">Borrow</span>
-                </span>
-                <div className="animated-arrow">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M13.0625 6.93579L6.93424 13.0641"></path>
-                    <path d="M6.93587 6.93571H13.0641V13.064"></path>
-                  </svg>
-                </div>
-              </a>
-            </div>
-
-            <div className="card-body">
-              {[
-                { title: 'Low costs', content: 'Competitive borrowing rates across all markets.' },
-                { title: 'Higher collateralization factors', content: 'Get more value from your collateral.' },
-                { title: 'Per market rates', content: 'Choose the most efficient market for your needs.' },
-                { title: 'Zero fees', content: 'No additional fees on top of market rates.' }
-              ].map((item) => (
-                <button 
-                  key={item.title}
-                  className="card-part"
-                  onMouseEnter={() => setActiveFeature(item.title.toLowerCase().replace(/\s+/g, ''))}
-                >
-                  <div className="card-part-header">
-                    <h5 className="card-part-title">{item.title}</h5>
-                    <div className="animated-plus">
-                      <div className="plus-bar"></div>
-                      <div className="plus-bar"></div>
-                    </div>
-                  </div>
-                  <p className="card-part-content">{item.content}</p>
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <footer ref={footerRef} className="footer scroll-animation">
-        <div className="footer-content">
-          <div className="footer-links">
-            <div className="footer-column">
-              <h3>Resources</h3>
-              <a href="#" className="footer-link">Documentation</a>
-              <a href="#" className="footer-link">Research</a>
-              <a href="#" className="footer-link">GitHub</a>
-              <a href="#" className="footer-link">Brand Kit</a>
-              <a href="#" className="footer-link">Audits</a>
-            </div>
-
-            <div className="footer-column">
-              <h3>Data & Analytics</h3>
-              <a href="#" className="footer-link">Block Analitica</a>
-              <a href="#" className="footer-link">Dune</a>
-              <a href="#" className="footer-link">Token Terminal</a>
-              <a href="#" className="footer-link">DeFi Llama</a>
-            </div>
-
-            <div className="footer-column">
-              <h3>Community</h3>
-              <a href="#" className="footer-link">Twitter</a>
-              <a href="#" className="footer-link">Farcaster</a>
-              <a href="#" className="footer-link">Discord</a>
-              <a href="#" className="footer-link">Mirror</a>
-            </div>
-          </div>
-        </div>
-        <div className="footer-bottom">
-          <img src="/LUTRAI.png" alt="LUTRAI" className="footer-logo" />
-        </div>
-      </footer>
+      </div>
     </div>
   )
 }

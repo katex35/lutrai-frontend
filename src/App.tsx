@@ -67,12 +67,12 @@ function App() {
           baseY: y,
           density: Math.random() * 20 + 1,
           color,
-          speedX: (Math.random() * 2 - 1) * 0.2,
-          speedY: (Math.random() * 2 - 1) * 0.2,
+          speedX: (Math.random() * 2 - 1) * 0.7,
+          speedY: (Math.random() * 2 - 1) * 0.7,
           angle: Math.random() * Math.PI * 2,
           amplitude: Math.random() * 1.5 + 0.5,
-          frequency: Math.random() * 0.02 + 0.01,
-          brightness: Math.random() * 0.3 + 0.7
+          frequency: Math.random() * 0.01 + 0.02,
+          brightness: Math.random() * 0.3 + 1
         })
       }
     }
@@ -85,7 +85,7 @@ function App() {
           const distance = Math.sqrt(dx * dx + dy * dy)
 
           if (distance < 120) {
-            const opacity = (120 - distance) / 120 * 0.2
+            const opacity = (120 - distance) / 120 * 0.6
             ctx.beginPath()
             ctx.strokeStyle = particles.current[i].color + opacity + ')'
             ctx.lineWidth = 0.2
